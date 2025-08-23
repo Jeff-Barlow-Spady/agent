@@ -32,6 +32,11 @@ def main():
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
+    # TODO: STEP 1 - ADD LOOP WRAPPER HERE
+    # Add: for iteration in range(20): before the response = client.models.generate_content call
+    # Add: if verbose_mode: print(f"\n--- Iteration {iteration + 1} ---") after the call
+    # Indent all existing code to be inside the loop
+
     response = client.models.generate_content(
         model=MODEL,
         contents=messages,
@@ -39,6 +44,13 @@ def main():
             tools=[available_functions], system_instruction=SYSTEM_PROMPT
         ),
     )
+
+    # TODO: STEP 2 - ADD COMPLETION CHECK HERE
+    # Add this before the "if not user_prompt:" check:
+    # if hasattr(response, 'text') and response.text:
+    #     print(f"\nFinal response:\n{response.text}")
+    #     return response.text
+
     if not user_prompt:
         Exception("exit code 1")
     if verbose_mode:
@@ -48,7 +60,14 @@ def main():
     else:
         print(response.text)
 
-    # Check if there are function calls in the response (run in both verbose and non-verbose modes)
+    # TODO: STEP 3 - ADD CANDIDATE HANDLING HERE
+    # Add this before the existing candidate handling code:
+    # if hasattr(response, 'candidates') and response.candidates:
+    #     for candidate in response.candidates:
+    #         if hasattr(candidate, 'content') and candidate.content:
+    #             messages.append(candidate.content)
+
+    # Check if there are function calls in the response run in both verbose and non-verbose mode.
     if hasattr(response, "candidates") and response.candidates:
         candidate = response.candidates[0]
         if hasattr(candidate, "content") and candidate.content:
@@ -80,6 +99,24 @@ def main():
                     # Also show in verbose mode with the -> format
                     if verbose_mode:
                         print(f"-> {response_data}")
+
+    # TODO: STEP 4 - ADD FUNCTION RESPONSE HANDLING HERE
+    # Add this after the function call execution:
+    # if function_call_result:
+    #     function_message = types.Content(
+    #         role="user",
+    #         parts=[types.Part(text=f"Function result: {response_data}")]
+    #     )
+    #     messages.append(function_message)
+
+    # TODO: STEP 5 - ADD ERROR HANDLING WRAPPER
+    # Add try: before the for loop
+    # Add except Exception as e: ... break after the function response handling
+
+    # TODO: STEP 6 - ADD MAX ITERATIONS MESSAGE
+    # Add this after the try-except block (outside the loop):
+    # print(f"\nReached maximum iterations (20) without completion.")
+    # return None
 
 
 if __name__ == "__main__":
