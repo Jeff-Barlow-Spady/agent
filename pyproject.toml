@@ -8,4 +8,9 @@ dependencies = [
     "google-genai==1.12.1",
     "python-dotenv==1.1.0",
     "ruff>=0.12.10",
+    "ty>=0.0.1a25",
 ]
+
+[tool.ty]
+# Configure ty to include calculator/ in the search path for module resolution
+environment = { extra-paths = ["calculator"] }

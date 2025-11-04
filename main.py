@@ -5,11 +5,12 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-def main():
 
+def main():
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from config import MODEL, SYSTEM_PROMPT
-        # Import the call_function and available_functions from the new module
+
+    # Import the call_function and available_functions from the new module
     from call_function import call_function, available_functions
 
     load_dotenv()
@@ -55,8 +56,11 @@ def main():
         Exception("exit code 1")
     if verbose_mode:
         print(f" User prompt: {user_prompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        if response.usage_metadata:
+            if hasattr(response.usage_metadata, "prompt_token_count"):
+                print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            if hasattr(response.usage_metadata, "candidates_token_count"):
+                print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
     else:
         print(response.text)
 
@@ -74,20 +78,29 @@ def main():
             for part in candidate.content.parts:
                 if hasattr(part, "function_call") and part.function_call:
                     # Use the new call_function to handle the function call
-                    function_call_result = call_function(part.function_call, verbose=verbose_mode)
+                    function_call_result = call_function(
+                        part.function_call, verbose=verbose_mode
+                    )
 
                     # Verify the response structure
-                    if not hasattr(function_call_result, 'parts') or not function_call_result.parts:
+                    if (
+                        not hasattr(function_call_result, "parts")
+                        or not function_call_result.parts
+                    ):
                         raise Exception("Invalid function call result structure")
 
-                    if not hasattr(function_call_result.parts[0], 'function_response'):
+                    if not hasattr(function_call_result.parts[0], "function_response"):
                         raise Exception("Missing function_response in result")
 
-                    if not hasattr(function_call_result.parts[0].function_response, 'response'):
+                    if not hasattr(
+                        function_call_result.parts[0].function_response, "response"
+                    ):
                         raise Exception("Missing response in function_response")
 
                     # Always show the function result, not just in verbose mode
-                    response_data = function_call_result.parts[0].function_response.response
+                    response_data = function_call_result.parts[
+                        0
+                    ].function_response.response
                     if isinstance(response_data, dict):
                         if "result" in response_data:
                             print(f"Function result: {response_data['result']}")

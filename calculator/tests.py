@@ -1,6 +1,13 @@
 # tests.py
 
 import unittest
+import sys
+import os
+
+# Add parent directory to path for direct script execution
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from pkg.calculator import Calculator
 
 
