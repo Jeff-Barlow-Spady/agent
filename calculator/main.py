@@ -4,11 +4,10 @@ import sys
 import os
 
 # Add parent directory to path for direct script execution
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from pkg.calculator import Calculator
-from pkg.render import render
+from pkg.calculator import Calculator # type: ignore
+from pkg.render import format_json_output # type: ignore
 
 
 def main():
@@ -22,7 +21,7 @@ def main():
     expression = " ".join(sys.argv[1:])
     try:
         result = calculator.evaluate(expression)
-        to_print = render(expression, result)
+        to_print = format_json_output(expression, result)
         print(to_print)
     except Exception as e:
         print(f"Error: {e}")

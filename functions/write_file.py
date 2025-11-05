@@ -62,9 +62,7 @@ def write_file(working_directory, file_path, content):
 
     except Exception as e:
         # Catch any other unexpected errors
-        return f"Error: An unexpected error occurred while writing to {file_path}"
-
-
+        return f"Error: An unexpected error occurred while writing to {file_path}: {e}"
 
 
 schema_write_file = types.FunctionDeclaration(
